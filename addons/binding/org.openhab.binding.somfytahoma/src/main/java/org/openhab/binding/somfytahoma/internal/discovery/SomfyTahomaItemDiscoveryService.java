@@ -4,13 +4,13 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
@@ -31,6 +31,11 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         logger.info("Creating discovery service");
         this.bridge = bridgeHandler;
         bridgeHandler.setDiscoveryService(this);
+    }
+
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypes() {
+        return new HashSet<>(Arrays.asList(THING_TYPE_ROLLERSHUTTER, THING_TYPE_ACTIONGROUP));
     }
 
     @Override
