@@ -1,55 +1,76 @@
 # Somfy Tahoma Binding
-TODO...
+Somfy Tahoma binding for OpenHAB v2.x
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
-
+It should be working also for Connexoom device since it should be using the same API
 ## Supported Things
 
+Currently supports these things
+- bridge (Somfy Tahoma bridge, which can discover roller shutters and action)
+- roller shutters (UP, DOWN, STOP control of a roller shutter)
+- actiongroups (can execute predefined Tahoma action - groups of steps, e.g. send to all roller shutters down command, one by one)
 
-
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+Currently only Somfy Tahoma device has been tested.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+First install this binding by copying .jar file to addon directory of OpenHAB 2.x installation.
+To start a discovery, just 
+- open Paper UI
+- add a new thing in menu Configuration/Things
+- choose SomfyTahoma Binding and select Somfy Tahoma Bridge
+- enter your email (login) and password to the TahomaLink cloud portal
+ 
+If the supplied TahomaLink credentials are correct the automatic discovery starts immediately and detected roller shutters and action groups appear in Paper UI inbox. 
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+To manually configure the thing you have to specify bridge and things in *.things file in conf/addons directory of your OpenHAB 2.x installation.
+To manually link the thing channels to items just use the *.items file in conf/items directory of your OpenHAB 2.x installation. 
+To retrieve thing configuration and url parameter, just add the automatically discovered device from you inbox and copy its values from thing edit page. (the url parameter is only at edit page visible)
+Please see the example below.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+A bridge exposes this channel:
+- version (this is a firmware version of your Tahoma device)
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+A roller shutter thing exposes these channels:
+- position (a percentual position of the roller shutter, it can have value 0-100)
+- control (a rollershutter controller which reacts to commands UP/DOWN/STOP)
+
+When STOP command received two possible behaviours are possible
+- when the roller shutter is idle, as MY command is interpreted (the roller shutter goes to your favourite position)
+- when the roller shutter is moving, than STOP command is interpreted (the roller shutter stops)
+
+An action group thing has this channel:
+- starter (a switch which reacts to ON command and executes the predefined Tahoma action)
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+.things file
+```
+Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com", password="MyPassword", refresh=30 ] {
+    Thing somfytahoma:rollershutter:31da8dac-8e09-455a-bc7a-6ed70f740001 "Bedroom" [ url="io://0204-1234-8041/6825356" ]
+    Thing somfytahoma:rollershutter:87bf0403-a45d-4037-b874-28f4ece30004 "Living room" [ url="io://0204-1234-8041/3832644" ]
+    Thing somfytahoma:rollershutter:68bee082-63ab-421d-9830-3ea561601234 "Hall" [ url="io://0204-1234-8041/4873641" ]
+    Thing somfytahoma:actiongroup:2104c46f-478d-6543-956a-10bd93b5dc54 "1st floor up" [ url="2104c46f-478d-6543-956a-10bd93b5dc54" ]
+    Thing somfytahoma:actiongroup:0b5f195a-5223-5432-b1af-f5fa1d59074f "1st floor down" [ url="0b5f195a-5223-5432-b1af-f5fa1d59074f" ]
+    Thing somfytahoma:actiongroup:712c0019-b422-1234-b4da-208e249c571b "2nd floor up" [ url="712c0019-b422-1234-b4da-208e249c571b" ]
+    Thing somfytahoma:actiongroup:e201637b-de3b-1234-b7af-5693811a953b "2nd floor down" [ url="e201637b-de3b-1234-b7af-5693811a953b" ]
+}
+```
+.items file
+```
+Rollershutter RollerShutterBedroom "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:31da8dac-8e09-455a-bc7a-6ed70f740001:control"}
+Dimmer RollerShutterBedroomD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:31da8dac-8e09-455a-bc7a-6ed70f740001:position"}
+Rollershutter RollerShutterLiving "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:87bf0403-a45d-4037-b874-28f4ece30004:control" }
+Dimmer RollerShutterLivingD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:87bf0403-a45d-4037-b874-28f4ece30004:position"}
+Rollershutter RollerShutterHall "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:68bee082-63ab-421d-9830-3ea561601234:control"}
+Dimmer RollerShutterHallD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:68bee082-63ab-421d-9830-3ea561601234:position"}
 
-## Any custom content here!
+Switch Rollers1UP "Rollers 1st floor UP" {channel="somfytahoma:actiongroup:2104c46f-478d-6543-956a-10bd93b5dc54:starter", autoupdate="false"}
+Switch Rollers1DOWN "Rollers 1st floor DOWN" {channel="somfytahoma:actiongroup:0b5f195a-5223-5432-b1af-f5fa1d59074f:starter", autoupdate="false"}
+Switch Rollers2UP "Rollers 2nd floor UP" {channel="somfytahoma:actiongroup:712c0019-b422-1234-b4da-208e249c571b:starter", autoupdate="false"}
+Switch Rollers2DOWN "Rollers 2nd floor DOWN" {channel="somfytahoma:actiongroup:e201637b-de3b-1234-b7af-5693811a953b:starter", autoupdate="false"}
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+```
