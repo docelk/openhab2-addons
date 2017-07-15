@@ -335,7 +335,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void updateTahomaStates() {
 
-        logger.info("Updating Tahoma States...");
+        logger.debug("Updating Tahoma States...");
         for(Thing thing : getThing().getThings()) {
             logger.debug("Updating thing {} with UID {}", thing.getLabel(), thing.getThingTypeUID());
             if(!thing.getThingTypeUID().equals(THING_TYPE_ROLLERSHUTTER))
@@ -397,7 +397,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         connection.setDoOutput(false);
         connection.setRequestMethod("GET");
         setConnectionDefaults(connection);
-        logger.info("Using cookie: {}", cookie);
         connection.setRequestProperty("Cookie", cookie);
 
         return connection.getInputStream();
@@ -411,7 +410,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         connection.setRequestMethod("POST");
         setConnectionDefaults(connection);
         connection.setRequestProperty("Content-Length", Integer.toString(postData.length));
-        logger.info("Using cookie: {}", cookie);
         connection.setRequestProperty("Cookie", cookie);
         try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
             wr.write(postData);
