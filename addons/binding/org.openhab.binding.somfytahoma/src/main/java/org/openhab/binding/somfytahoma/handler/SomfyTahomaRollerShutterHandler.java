@@ -27,7 +27,7 @@ public class SomfyTahomaRollerShutterHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("Received command {} for channel {}", command, channelUID);
+        logger.debug("Received command {} for channel {}", command, channelUID);
         if (!channelUID.getId().equals(POSITION) && !channelUID.getId().equals(CONTROL)) {
             return;
         }
