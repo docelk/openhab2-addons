@@ -102,9 +102,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             @Override
             public void run() {
                 try {
-                    if (loggedIn) {
-                        updateTahomaStates();
-                    }
+                    updateTahomaStates();
                 } catch (Exception e) {
                     logger.debug("Exception during poll : {}", e);
                 }
@@ -334,11 +332,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private void updateTahomaStates() {
-
         logger.debug("Updating Tahoma States...");
-        for(Thing thing : getThing().getThings()) {
+        for (Thing thing : getThing().getThings()) {
             logger.debug("Updating thing {} with UID {}", thing.getLabel(), thing.getThingTypeUID());
-            if(!thing.getThingTypeUID().equals(THING_TYPE_ROLLERSHUTTER))
+            if (!thing.getThingTypeUID().equals(THING_TYPE_ROLLERSHUTTER))
                 continue;
             String url = thing.getConfiguration().get("url").toString();
             updateRollerShutterState(thing, url);
