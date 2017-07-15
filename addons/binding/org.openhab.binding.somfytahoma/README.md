@@ -39,8 +39,8 @@ A roller shutter thing exposes these channels:
 - control (a rollershutter controller which reacts to commands UP/DOWN/STOP)
 
 When STOP command received two possible behaviours are possible
-- when the roller shutter is idle, as MY command is interpreted (the roller shutter goes to your favourite position)
-- when the roller shutter is moving, than STOP command is interpreted (the roller shutter stops)
+- when the roller shutter is idle then MY command is interpreted (the roller shutter goes to your favourite position)
+- when the roller shutter is moving then STOP command is interpreted (the roller shutter stops)
 
 An action group thing has this channel:
 - starter (a switch which reacts to ON command and executes the predefined Tahoma action)
